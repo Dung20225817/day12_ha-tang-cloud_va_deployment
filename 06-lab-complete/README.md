@@ -2,6 +2,18 @@
 
 This folder is the final submission app that combines Day 12 production hardening and Day 09 supervisor-worker orchestration.
 
+## Submission Snapshot
+
+- Public URL: [https://day12-agent-api-production.up.railway.app](https://day12-agent-api-production.up.railway.app)
+- Latest deployment: 3667bb13-6ec4-46c2-83f2-dcc2733988e8 (SUCCESS)
+- Public smoke checks (2026-04-17):
+  - GET /health -> 200
+  - GET /ready -> 200
+  - GET /ui -> 200
+  - POST /ask without API key -> 401
+  - POST /ask with valid API key -> 200
+  - GET /kb-status with API key -> 200
+
 ## Implemented Features
 
 - Multi-stage Docker build with non-root runtime user
@@ -78,6 +90,14 @@ curl -H "X-API-Key: secret-key-123" "http://localhost/trace/demo?limit=5"
 - First 10 requests return 200 and later requests return 429
 - SLA query should route to retrieval_worker and return non-empty sources
 - Multi-hop query should route to multi_hop and return sources from multiple docs
+- UI page is available at /ui for manual smoke testing
+
+## Submission Files
+
+- Mission answers: ../MISSION_ANSWERS.md
+- Deployment proof: ../DEPLOYMENT.md
+- Delivery checklist: ../DAY12_DELIVERY_CHECKLIST.md
+- Screenshots: ../screenshots/dashboard.png, ../screenshots/running.png, ../screenshots/test.png
 
 ## Orchestrator Evaluation
 

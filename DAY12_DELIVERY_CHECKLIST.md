@@ -164,16 +164,26 @@ Before submitting, verify your deployment:
 # 1. Health check
 curl https://day12-agent-api-production.up.railway.app/health
 
-# 2. Authentication required
+# 2. Readiness check
+curl https://day12-agent-api-production.up.railway.app/ready
+
+# 3. UI check
+curl -I https://day12-agent-api-production.up.railway.app/ui
+
+# 4. Authentication required
 curl https://day12-agent-api-production.up.railway.app/ask
 # Should return 401
 
-# 3. With API key works
+# 5. With API key works
 curl -H "X-API-Key: <AGENT_API_KEY>" https://day12-agent-api-production.up.railway.app/ask \
   -X POST -d '{"user_id":"test","question":"Hello"}'
 # Should return 200
 
-# 4. Rate limiting
+# 6. KB status (with API key)
+curl -H "X-API-Key: <AGENT_API_KEY>" https://day12-agent-api-production.up.railway.app/kb-status
+# Should return 200
+
+# 7. Rate limiting
 for i in {1..15}; do 
   curl -H "X-API-Key: <AGENT_API_KEY>" https://day12-agent-api-production.up.railway.app/ask \
     -X POST -d '{"user_id":"test","question":"test"}'; 

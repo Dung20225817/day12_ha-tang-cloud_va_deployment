@@ -134,7 +134,7 @@ curl -X POST https://day12-agent-api-production.up.railway.app/ask \
 - Container eval quick check: `EVAL_SUCCESS=15/15`
 
 ## Screenshots
-- Required files for final submission (pending add):
-  - [ ] `screenshots/dashboard.png` - Railway dashboard with service status
-  - [ ] `screenshots/running.png` - Browser test of public endpoint
-  - [ ] `screenshots/test.png` - Terminal smoke test outputs
+- Included files:
+  - [x] `screenshots/dashboard.png` - Railway dashboard with service status
+  - [x] `screenshots/running.png` - Browser test of public endpoint
+  - [x] `screenshots/test.png` - Terminal smoke test outputs

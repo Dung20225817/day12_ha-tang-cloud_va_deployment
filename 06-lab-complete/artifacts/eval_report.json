@@ -1,0 +1,18 @@
+{
+  "generated_at": "2026-04-17T09:31:42.705549+00:00",
+  "total_questions": 15,
+  "successful_runs": 15,
+  "failed_runs": 0,
+  "routing_distribution": {
+    "retrieval_worker": 8,
+    "policy_tool_worker": 5,
+    "multi_hop": 2
+  },
+  "worker_call_counts": {
+    "retrieval_worker": 10,
+    "synthesis_worker": 15,
+    "policy_tool_worker": 7
+  },
+  "avg_confidence": 0.647,
+  "avg_latency_ms": 0.2
+}

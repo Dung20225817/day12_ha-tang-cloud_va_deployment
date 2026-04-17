@@ -1,0 +1,42 @@
+version: "1.0"
+updated_at: "2026-04-17"
+
+supervisor:
+  output:
+    supervisor_route: [retrieval_worker, policy_tool_worker, human_review, multi_hop]
+    route_reason: string
+    risk_high: boolean
+    needs_tool: boolean
+
+retrieval_worker:
+  input:
+    task: string
+    top_k: integer
+  output:
+    retrieved_chunks:
+      - text: string
+        source: string
+        score: float
+    retrieved_sources: [string]
+
+policy_tool_worker:
+  input:
+    task: string
+    retrieved_chunks: [chunk]
+    needs_tool: boolean
+  output:
+    policy_result:
+      policy_applies: boolean
+      policy_name: string
+      exceptions_found: [object]
+    mcp_tools_used: [object]
+
+synthesis_worker:
+  input:
+    task: string
+    retrieved_chunks: [chunk]
+    policy_result: object
+  output:
+    final_answer: string
+    sources: [string]
+    confidence: float

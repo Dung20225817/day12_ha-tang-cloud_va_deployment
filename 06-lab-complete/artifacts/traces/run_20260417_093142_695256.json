@@ -1,0 +1,146 @@
+{
+  "task": "Ticket P1 không được phản hồi sau 10 phút. Hệ thống tự động làm gì?",
+  "route_reason": "incident/SLA intent detected, use retrieval + synthesis with broader context",
+  "risk_high": true,
+  "needs_tool": false,
+  "hitl_triggered": false,
+  "retrieved_chunks": [
+    {
+      "text": "Ticket P2: - Phản hồi ban đầu: 2 giờ. - Xử lý và khắc phục: 1 ngày làm việc. - Escalation: Tự động escalate sau 90 phút không có phản hồi.",
+      "source": "sla_p1_2026.txt",
+      "score": 0.8911,
+      "metadata": {
+        "chunk_index": 8,
+        "token_count": 22
+      }
+    },
+    {
+      "text": "Ticket P1: - Phản hồi ban đầu (first response): 15 phút kể từ khi ticket được tạo. - Xử lý và khắc phục (resolution): 4 giờ. - Escalation: Tự động escalate lên Senior Engineer nếu không có phản hồi trong 10 phút. - Thông báo stakeholder: Ngay khi nhận ticket, update mỗi 30 phút cho đến khi resolve.",
+      "source": "sla_p1_2026.txt",
+      "score": 0.7929,
+      "metadata": {
+        "chunk_index": 7,
+        "token_count": 46
+      }
+    },
+    {
+      "text": "Quy trình escalation khẩn cấp: 1. On-call IT Admin có thể cấp quyền tạm thời (max 24 giờ) sau khi được Tech Lead phê duyệt bằng lời. 2. Sau 24 giờ, phải có ticket chính thức hoặc quyền bị thu hồi tự động. 3. Mọi quyền tạm thời phải được ghi log vào hệ thống Security Audit.",
+      "source": "access_control_sop.txt",
+      "score": 0.6827,
+      "metadata": {
+        "chunk_index": 12,
+        "token_count": 51
+      }
+    },
+    {
+      "text": "Ticket P3: - Phản hồi ban đầu: 1 ngày làm việc. - Xử lý và khắc phục: 5 ngày làm việc.",
+      "source": "sla_p1_2026.txt",
+      "score": 0.4976,
+      "metadata": {
+        "chunk_index": 9,
+        "token_count": 14
+      }
+    },
+    {
+      "text": "Ticket P4: - Phản hồi ban đầu: 3 ngày làm việc. - Xử lý và khắc phục: Theo sprint cycle (thông thường 2-4 tuần).",
+      "source": "sla_p1_2026.txt",
+      "score": 0.4607,
+      "metadata": {
+        "chunk_index": 10,
+        "token_count": 17
+      }
+    },
+    {
+      "text": "=== Phần 4: Công cụ và kênh liên lạc === Ticket system: Jira (project IT-SUPPORT) Slack channel: #incident-p1, #incident-p2 PagerDuty: Tự động nhắn on-call khi P1 ticket mới Hotline on-call: ext. 9999 (24/7)",
+      "source": "sla_p1_2026.txt",
+      "score": 0.4152,
+      "metadata": {
+        "chunk_index": 17,
+        "token_count": 34
+      }
+    },
+    {
+      "text": "Bước 1: Nhân viên gửi yêu cầu nghỉ phép qua hệ thống HR Portal (https://hr.company.internal) ít nhất 3 ngày làm việc trước ngày nghỉ. Bước 2: Line Manager phê duyệt hoặc từ chối trong vòng 1 ngày làm việc. Bước 3: Nhân viên nhận thông báo qua email sau khi được phê duyệt.",
+      "source": "hr_leave_policy.txt",
+      "score": 0.4039,
+      "metadata": {
+        "chunk_index": 6,
+        "token_count": 45
+      }
+    },
+    {
+      "text": "=== Điều 4: Quy trình xử lý yêu cầu hoàn tiền === Bước 1: Khách hàng gửi yêu cầu qua hệ thống ticket nội bộ với category \"Refund Request\". Bước 2: CS Agent xem xét trong vòng 1 ngày làm việc và xác nhận điều kiện đủ điều kiện. Bước 3: Nếu đủ điều kiện, chuyển yêu cầu sang Finance Team để xử lý hoàn tiền. Bước 4: Finance Team xử lý trong 3-5 ngày làm việc và thông báo kết quả cho khách hàng.",
+      "source": "policy_refund_v4.txt",
+      "score": 0.3932,
+      "metadata": {
+        "chunk_index": 6,
+        "token_count": 65
+      }
+    }
+  ],
+  "retrieved_sources": [
+    "access_control_sop.txt",
+    "hr_leave_policy.txt",
+    "policy_refund_v4.txt",
+    "sla_p1_2026.txt"
+  ],
+  "policy_result": {},
+  "mcp_tools_used": [],
+  "final_answer": "SLA P1 có phản hồi ban đầu trong 15 phút; thời gian xử lý/khắc phục: 1 ngày làm việc; kênh thông báo gồm Slack #incident-p1, PagerDuty on-call. Nếu không có phản hồi trong 10 phút, hệ thống tự động escalate lên Senior Engineer. [sla_p1_2026.txt] [access_control_sop.txt]",
+  "sources": [
+    "sla_p1_2026.txt",
+    "access_control_sop.txt"
+  ],
+  "confidence": 0.84,
+  "history": [
+    "[supervisor] route=retrieval_worker reason=incident/SLA intent detected, use retrieval + synthesis with broader context",
+    "[retrieval_worker] retrieved 8 chunks from 4 sources",
+    "[synthesis_worker] generated answer with confidence=0.84",
+    "[graph] completed in 0ms"
+  ],
+  "workers_called": [
+    "retrieval_worker",
+    "synthesis_worker"
+  ],
+  "supervisor_route": "retrieval_worker",
+  "latency_ms": 0,
+  "run_id": "run_20260417_093142_695256",
+  "worker_io_logs": [
+    {
+      "worker": "retrieval_worker",
+      "input": {
+        "task": "Ticket P1 không được phản hồi sau 10 phút. Hệ thống tự động làm gì?",
+        "top_k": 8
+      },
+      "output": {
+        "chunks_count": 8,
+        "sources": [
+          "access_control_sop.txt",
+          "hr_leave_policy.txt",
+          "policy_refund_v4.txt",
+          "sla_p1_2026.txt"
+        ],
+        "top_score": 0.8911
+      },
+      "error": null
+    },
+    {
+      "worker": "synthesis_worker",
+      "input": {
+        "task": "Ticket P1 không được phản hồi sau 10 phút. Hệ thống tự động làm gì?",
+        "chunks_count": 8,
+        "has_policy_result": false
+      },
+      "output": {
+        "answer_length": 270,
+        "sources": [
+          "sla_p1_2026.txt",
+          "access_control_sop.txt"
+        ],
+        "confidence": 0.84
+      },
+      "error": null
+    }
+  ],
+  "retrieval_top_k": 8
+}

@@ -1,100 +1,117 @@
-# Lab 12 — Complete Production Agent
+# Lab 12 Complete - Production Agent (Day09 Upgrade)
 
-Kết hợp TẤT CẢ những gì đã học trong 1 project hoàn chỉnh.
+This folder is the final submission app that combines Day 12 production hardening and Day 09 supervisor-worker orchestration.
 
-## Checklist Deliverable
+## Implemented Features
 
-- [x] Dockerfile (multi-stage, < 500 MB)
-- [x] docker-compose.yml (agent + redis)
-- [x] .dockerignore
-- [x] Health check endpoint (`GET /health`)
-- [x] Readiness endpoint (`GET /ready`)
-- [x] API Key authentication
-- [x] Rate limiting
-- [x] Cost guard
-- [x] Config từ environment variables
-- [x] Structured logging
-- [x] Graceful shutdown
-- [x] Public URL ready (Railway / Render config)
+- Multi-stage Docker build with non-root runtime user
+- API key authentication via header `X-API-Key`
+- Rate limiting: 10 requests per minute per user
+- Cost guard: 10 USD per month per user
+- Health and readiness endpoints
+- Graceful shutdown behavior
+- Stateless history and trace storage in Redis
+- Nginx load balancing for horizontal scaling
+- Supervisor-worker orchestration routes: retrieval_worker, policy_tool_worker, multi_hop
+- Operational endpoints: `GET /ui`, `GET /trace/{user_id}`, `GET /kb-status`
 
----
+## Main Files
 
-## Cấu Trúc
+- API entrypoint: `app/main.py`
+- Security and controls: `app/auth.py`, `app/rate_limiter.py`, `app/cost_guard.py`, `app/config.py`
+- Orchestration: `app/orchestrator/graph.py`
+- Workers: `app/orchestrator/workers/retrieval.py`, `app/orchestrator/workers/policy_tool.py`, `app/orchestrator/workers/synthesis.py`
+- Tool server: `app/orchestrator/mcp_server.py`
+- KB search: `app/orchestrator/knowledge_base.py`
+- KB docs: `app/orchestrator/data/docs/*.txt`
+- Test questions: `app/orchestrator/data/test_questions.json`
 
-```
-06-lab-complete/
-├── app/
-│   ├── main.py         # Entry point — kết hợp tất cả
-│   ├── config.py       # 12-factor config
-│   ├── auth.py         # API Key + JWT
-│   ├── rate_limiter.py # Rate limiting
-│   └── cost_guard.py   # Budget protection
-├── Dockerfile          # Multi-stage, production-ready
-├── docker-compose.yml  # Full stack
-├── railway.toml        # Deploy Railway
-├── render.yaml         # Deploy Render
-├── .env.example        # Template
-├── .dockerignore
-└── requirements.txt
-```
+Note: `knowledge_base.py` has embedded-doc fallback. If cloud packaging misses docs files, retrieval still works and `GET /kb-status` reports `using_embedded_docs=true`.
 
----
+## Run Locally
 
-## Chạy Local
+1. Open terminal in this folder.
 
 ```bash
-# 1. Setup
-cp .env.example .env
+cd 06-lab-complete
+```
 
-# 2. Chạy với Docker Compose
-docker compose up
+1. Create local environment file.
 
-# 3. Test
+```bash
+copy .env.example .env
+```
+
+1. Build and run stack.
+
+```bash
+docker compose up -d --build
+```
+
+1. Quick smoke tests.
+
+```bash
 curl http://localhost/health
-
-# 4. Lấy API key từ .env, test endpoint
-API_KEY=$(grep AGENT_API_KEY .env | cut -d= -f2)
-curl -H "X-API-Key: $API_KEY" \
-     -X POST http://localhost/ask \
-     -H "Content-Type: application/json" \
-     -d '{"question": "What is deployment?"}'
+curl http://localhost/ready
+curl http://localhost/ui
+curl -H "X-API-Key: secret-key-123" http://localhost/kb-status
 ```
 
----
-
-## Deploy Railway (< 5 phút)
+1. Ask endpoint test.
 
 ```bash
-# Cài Railway CLI
-npm i -g @railway/cli
-
-# Login và deploy
-railway login
-railway init
-railway variables set OPENAI_API_KEY=sk-...
-railway variables set AGENT_API_KEY=your-secret-key
-railway up
-
-# Nhận public URL!
-railway domain
+curl -X POST http://localhost/ask \
+  -H "X-API-Key: secret-key-123" \
+  -H "Content-Type: application/json" \
+  -d '{"user_id":"demo","question":"SLA ticket P1 response and resolution time"}'
 ```
 
----
+1. Trace endpoint test.
 
-## Deploy Render
+```bash
+curl -H "X-API-Key: secret-key-123" "http://localhost/trace/demo?limit=5"
+```
 
-1. Push repo lên GitHub
-2. Render Dashboard → New → Blueprint
-3. Connect repo → Render đọc `render.yaml`
-4. Set secrets: `OPENAI_API_KEY`, `AGENT_API_KEY`
-5. Deploy → Nhận URL!
+## Validation Targets
 
----
+- Auth without key returns 401
+- First 10 requests return 200 and later requests return 429
+- SLA query should route to retrieval_worker and return non-empty sources
+- Multi-hop query should route to multi_hop and return sources from multiple docs
 
-## Kiểm Tra Production Readiness
+## Orchestrator Evaluation
+
+Host run:
+
+```bash
+python eval_trace.py
+```
+
+Container quick check:
+
+```bash
+docker compose exec -T agent python -c "import json; from pathlib import Path; from app.orchestrator.graph import run_graph; qs=json.loads(Path('/app/app/orchestrator/data/test_questions.json').read_text(encoding='utf-8')); ok=sum(1 for q in qs if (run_graph(q['question'],[]).get('final_answer') or '').strip()); print(f'EVAL_SUCCESS={ok}/{len(qs)}')"
+```
+
+## Deploy
+
+- Railway config: `railway.toml`
+- Render config: `render.yaml`
+
+Required cloud env vars:
+
+- AGENT_API_KEY
+- REDIS_URL
+- RATE_LIMIT_PER_MINUTE
+- MONTHLY_BUDGET_USD
+- HISTORY_MAX_MESSAGES
+- HISTORY_TTL_SECONDS
+- OPENAI_API_KEY (optional)
+
+## Production Checker
 
 ```bash
 python check_production_ready.py
 ```
 
-Script này kiểm tra tất cả items trong checklist và báo cáo những gì còn thiếu.
+Expected result: all required checks pass.

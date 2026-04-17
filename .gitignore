@@ -34,3 +34,9 @@ Thumbs.db
 # ── Docker volumes (local dev) ─────────────────────��──────
 data/
 volumes/
+
+# Keep Day12 final lab KB data in deployment bundles.
+!06-lab-complete/app/orchestrator/data/
+!06-lab-complete/app/orchestrator/data/docs/
+!06-lab-complete/app/orchestrator/data/docs/*.txt
+!06-lab-complete/app/orchestrator/data/test_questions.json

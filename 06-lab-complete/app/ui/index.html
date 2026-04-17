@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Day12 Agent UI</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --text: #1d2733;
+      --muted: #5d6b7a;
+      --line: #d9e1ea;
+      --accent: #0d6efd;
+      --accent-2: #0b5ed7;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(160deg, #eef3f9 0%, #f8fbff 55%, #edf5ff 100%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .wrap {
+      max-width: 980px;
+      margin: 32px auto;
+      padding: 0 16px 24px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+    }
+
+    .sub {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .full { grid-column: 1 / -1; }
+
+    label {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    input, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 14px;
+      background: #fff;
+      color: var(--text);
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+      line-height: 1.45;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 14px;
+      font-weight: 600;
+      background: #e9eff7;
+      color: #274060;
+      cursor: pointer;
+      transition: transform 0.06s ease, background 0.2s ease;
+    }
+
+    button.primary {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      background: #dfe8f2;
+    }
+
+    button.primary:hover {
+      background: var(--accent-2);
+    }
+
+    pre {
+      margin: 0;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #0f1720;
+      color: #d7e2ef;
+      padding: 12px;
+      min-height: 220px;
+      overflow: auto;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .hint {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    @media (max-width: 740px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="card">
+      <h1>Day12 Agent UI</h1>
+      <p class="sub">Pure HTML client for /ask, /health, /ready, /kb-status, /trace.</p>
+    </section>
+
+    <section class="card">
+      <div class="grid">
+        <div>
+          <label for="baseUrl">Base URL</label>
+          <input id="baseUrl" type="text" value="" placeholder="http://localhost">
+        </div>
+        <div>
+          <label for="apiKey">API Key</label>
+          <input id="apiKey" type="text" value="secret-key-123" placeholder="X-API-Key value">
+        </div>
+        <div>
+          <label for="userId">User ID</label>
+          <input id="userId" type="text" value="demo-user">
+        </div>
+        <div>
+          <label for="traceLimit">Trace Limit</label>
+          <input id="traceLimit" type="number" value="3" min="1" max="100">
+        </div>
+        <div class="full">
+          <label for="question">Question</label>
+          <textarea id="question">SLA ticket P1 response and resolution time</textarea>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="primary" id="askBtn">POST /ask</button>
+        <button id="healthBtn">GET /health</button>
+        <button id="readyBtn">GET /ready</button>
+        <button id="kbBtn">GET /kb-status</button>
+        <button id="traceBtn">GET /trace/{user_id}</button>
+      </div>
+      <p class="hint">Tip: on Railway, set Base URL to your public domain, then fill API key from env.</p>
+    </section>
+
+    <section class="card">
+      <pre id="output">Ready.</pre>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      const baseUrl = document.getElementById('baseUrl');
+      const apiKey = document.getElementById('apiKey');
+      const userId = document.getElementById('userId');
+      const traceLimit = document.getElementById('traceLimit');
+      const question = document.getElementById('question');
+      const output = document.getElementById('output');
+
+      baseUrl.value = window.location.origin;
+
+      function withHeaders(extra) {
+        const headers = Object.assign({}, extra || {});
+        const key = apiKey.value.trim();
+        if (key) {
+          headers['X-API-Key'] = key;
+        }
+        return headers;
+      }
+
+      async function callApi(path, method, body) {
+        const url = baseUrl.value.replace(/\/$/, '') + path;
+        const opts = {
+          method: method,
+          headers: withHeaders(body ? { 'Content-Type': 'application/json' } : {}),
+        };
+        if (body) {
+          opts.body = JSON.stringify(body);
+        }
+
+        output.textContent = 'Loading...';
+
+        try {
+          const res = await fetch(url, opts);
+          const text = await res.text();
+          let data;
+          try {
+            data = JSON.parse(text);
+          } catch (e) {
+            data = text;
+          }
+
+          output.textContent = JSON.stringify(
+            {
+              status: res.status,
+              ok: res.ok,
+              path: path,
+              data: data,
+            },
+            null,
+            2
+          );
+        } catch (err) {
+          output.textContent = JSON.stringify(
+            {
+              status: 'network_error',
+              message: String(err),
+            },
+            null,
+            2
+          );
+        }
+      }
+
+      document.getElementById('askBtn').addEventListener('click', function () {
+        callApi('/ask', 'POST', {
+          user_id: userId.value.trim() || 'demo-user',
+          question: question.value.trim() || 'Hello',
+        });
+      });
+
+      document.getElementById('healthBtn').addEventListener('click', function () {
+        callApi('/health', 'GET');
+      });
+
+      document.getElementById('readyBtn').addEventListener('click', function () {
+        callApi('/ready', 'GET');
+      });
+
+      document.getElementById('kbBtn').addEventListener('click', function () {
+        callApi('/kb-status', 'GET');
+      });
+
+      document.getElementById('traceBtn').addEventListener('click', function () {
+        const uid = encodeURIComponent(userId.value.trim() || 'demo-user');
+        const limit = Math.max(1, Math.min(100, Number(traceLimit.value) || 3));
+        callApi('/trace/' + uid + '?limit=' + limit, 'GET');
+      });
+    })();
+  </script>
+</body>
+</html>

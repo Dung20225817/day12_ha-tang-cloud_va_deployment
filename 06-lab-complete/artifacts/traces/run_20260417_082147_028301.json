@@ -1,0 +1,140 @@
+{
+  "task": "SLA xử lý ticket P1 là bao lâu?",
+  "route_reason": "incident/SLA intent detected, use retrieval + synthesis with broader context",
+  "risk_high": true,
+  "needs_tool": false,
+  "hitl_triggered": false,
+  "retrieved_chunks": [
+    {
+      "text": "SLA TICKET - QUY ĐỊNH XỬ LÝ SỰ CỐ Source: support/sla-p1-2026.pdf Department: IT Effective Date: 2026-01-15 Access: internal",
+      "source": "sla_p1_2026.txt",
+      "score": 0.8849,
+      "metadata": {
+        "chunk_index": 1,
+        "token_count": 23
+      }
+    },
+    {
+      "text": "Ticket P1: - Phản hồi ban đầu (first response): 15 phút kể từ khi ticket được tạo. - Xử lý và khắc phục (resolution): 4 giờ. - Escalation: Tự động escalate lên Senior Engineer nếu không có phản hồi trong 10 phút. - Thông báo stakeholder: Ngay khi nhận ticket, update mỗi 30 phút cho đến khi resolve.",
+      "source": "sla_p1_2026.txt",
+      "score": 0.6631,
+      "metadata": {
+        "chunk_index": 7,
+        "token_count": 46
+      }
+    },
+    {
+      "text": "=== Phần 3: Quy trình xử lý sự cố P1 ===",
+      "source": "sla_p1_2026.txt",
+      "score": 0.6121,
+      "metadata": {
+        "chunk_index": 11,
+        "token_count": 8
+      }
+    },
+    {
+      "text": "Ticket P3: - Phản hồi ban đầu: 1 ngày làm việc. - Xử lý và khắc phục: 5 ngày làm việc.",
+      "source": "sla_p1_2026.txt",
+      "score": 0.5732,
+      "metadata": {
+        "chunk_index": 9,
+        "token_count": 14
+      }
+    },
+    {
+      "text": "Ticket P4: - Phản hồi ban đầu: 3 ngày làm việc. - Xử lý và khắc phục: Theo sprint cycle (thông thường 2-4 tuần).",
+      "source": "sla_p1_2026.txt",
+      "score": 0.5455,
+      "metadata": {
+        "chunk_index": 10,
+        "token_count": 17
+      }
+    },
+    {
+      "text": "Bước 4: Xử lý Engineer cập nhật tiến độ lên ticket mỗi 30 phút. Nếu cần hỗ trợ thêm, escalate ngay.",
+      "source": "sla_p1_2026.txt",
+      "score": 0.5376,
+      "metadata": {
+        "chunk_index": 15,
+        "token_count": 19
+      }
+    },
+    {
+      "text": "Ticket P2: - Phản hồi ban đầu: 2 giờ. - Xử lý và khắc phục: 1 ngày làm việc. - Escalation: Tự động escalate sau 90 phút không có phản hồi.",
+      "source": "sla_p1_2026.txt",
+      "score": 0.5342,
+      "metadata": {
+        "chunk_index": 8,
+        "token_count": 22
+      }
+    },
+    {
+      "text": "=== Điều 4: Quy trình xử lý yêu cầu hoàn tiền === Bước 1: Khách hàng gửi yêu cầu qua hệ thống ticket nội bộ với category \"Refund Request\". Bước 2: CS Agent xem xét trong vòng 1 ngày làm việc và xác nhận điều kiện đủ điều kiện. Bước 3: Nếu đủ điều kiện, chuyển yêu cầu sang Finance Team để xử lý hoàn tiền. Bước 4: Finance Team xử lý trong 3-5 ngày làm việc và thông báo kết quả cho khách hàng.",
+      "source": "policy_refund_v4.txt",
+      "score": 0.4949,
+      "metadata": {
+        "chunk_index": 6,
+        "token_count": 65
+      }
+    }
+  ],
+  "retrieved_sources": [
+    "policy_refund_v4.txt",
+    "sla_p1_2026.txt"
+  ],
+  "policy_result": {},
+  "mcp_tools_used": [],
+  "final_answer": "SLA P1 có phản hồi ban đầu trong 15 phút; thời gian xử lý/khắc phục: 4 giờ. Nếu không có phản hồi trong 10 phút, hệ thống tự động escalate lên Senior Engineer. [sla_p1_2026.txt]",
+  "sources": [
+    "sla_p1_2026.txt"
+  ],
+  "confidence": 0.77,
+  "history": [
+    "[supervisor] route=retrieval_worker reason=incident/SLA intent detected, use retrieval + synthesis with broader context",
+    "[retrieval_worker] retrieved 8 chunks from 2 sources",
+    "[synthesis_worker] generated answer with confidence=0.77",
+    "[graph] completed in 8ms"
+  ],
+  "workers_called": [
+    "retrieval_worker",
+    "synthesis_worker"
+  ],
+  "supervisor_route": "retrieval_worker",
+  "latency_ms": 8,
+  "run_id": "run_20260417_082147_028301",
+  "worker_io_logs": [
+    {
+      "worker": "retrieval_worker",
+      "input": {
+        "task": "SLA xử lý ticket P1 là bao lâu?",
+        "top_k": 8
+      },
+      "output": {
+        "chunks_count": 8,
+        "sources": [
+          "policy_refund_v4.txt",
+          "sla_p1_2026.txt"
+        ],
+        "top_score": 0.8849
+      },
+      "error": null
+    },
+    {
+      "worker": "synthesis_worker",
+      "input": {
+        "task": "SLA xử lý ticket P1 là bao lâu?",
+        "chunks_count": 8,
+        "has_policy_result": false
+      },
+      "output": {
+        "answer_length": 177,
+        "sources": [
+          "sla_p1_2026.txt"
+        ],
+        "confidence": 0.77
+      },
+      "error": null
+    }
+  ],
+  "retrieval_top_k": 8
+}
